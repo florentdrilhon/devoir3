@@ -1,0 +1,39 @@
+version: "3"
+services:
+    #here we put the services that we want to orchestrate
+    postgresDB:
+        image: "postgres" 
+         
+        #here we specify 
+        environment:
+            
+            POSTGRES_DATABASE: "MyDB"
+            POSTGRES_USER: "manager"
+            POSTGRES_PASSWORD: "mypassword"
+        volumes:
+         - db_data:/postgres_data/
+        ports: 
+          - "80:5432"
+
+
+    manager:
+       depends_on: 
+         - postgresDB
+       build:
+        context: "./manager"
+       image: manager
+       
+       links:
+        - "postgresDB:db"
+
+       environment: 
+            POSTGRES_DATABASE: "MyDB"
+            POSTGRES_USER: "manager"
+            POSTGRES_PASSWORD: "mypassword"
+            CSV_FILENAME: "data.csv"
+       
+       
+      
+
+volumes: 
+  db_data: {}

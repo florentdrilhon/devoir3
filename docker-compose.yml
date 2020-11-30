@@ -4,28 +4,33 @@ services:
     postgresDB:
         image: "postgres" 
          
-        #here we specify 
+        #here we specify the variables of our database
         environment:
             
             POSTGRES_DATABASE: "MyDB"
             POSTGRES_USER: "manager"
             POSTGRES_PASSWORD: "mypassword"
+        #we add a volume to store our database
         volumes:
          - db_data:/postgres_data/
+        #we expose the port specified in our python code 
         ports: 
           - "80:5432"
 
-
+   #our manager app build from the python code
+   #the service named after the condition of the dev team
     manager:
+      #to add a little security even if our dockerfile makes the python code wait for the DB
        depends_on: 
          - postgresDB
        build:
         context: "./manager"
+        #we name our new image
        image: manager
-       
+       #we had a link use the the automatic service discovery to provide the host's name
        links:
         - "postgresDB:db"
-
+       #here we specify our variables, must match with the ones from our DB
        environment: 
             POSTGRES_DATABASE: "MyDB"
             POSTGRES_USER: "manager"
